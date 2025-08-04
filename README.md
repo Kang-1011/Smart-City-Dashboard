@@ -6,7 +6,7 @@ A real-time smart city dashboard that visualises temperature, AQI, and traffic l
 - Frontend: Vue 3
 - Backend: Firebase Cloud Functions
 - Database: Firestore (stores simulated sensor data)
-- Scheduler: Firebase Scheduled Functions to generate and store new sensor data every minute
+- Scheduler: Firebase Scheduled Functions to generate and store new sensor data every few seconds (60 seconds)
    
 <img width="538" height="579" alt="image" src="https://github.com/user-attachments/assets/31d986a3-05ee-4f53-a0bc-93028d79a08d" />
 
