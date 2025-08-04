@@ -49,7 +49,6 @@ const props = defineProps({
 });
 
 const sparklineGradient = computed(() => {
-  // A generic gradient for the sparklines
   return ['#42b883', '#35495e'];
 });
 </script>

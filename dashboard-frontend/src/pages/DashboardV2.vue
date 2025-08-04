@@ -110,12 +110,10 @@ async function fetchSensorData() {
   }));
 }
 
-// Watch for changes in selectedZone
 watch(selectedZone, async () => {
   await fetchSensorData();
 })
 
-// Computed Properties for dynamic icon colors
 const temperatureIconColor = computed(() => {
   const temp = currentTemperature.value
   if (temp > 30) return 'red';
@@ -124,14 +122,14 @@ const temperatureIconColor = computed(() => {
 });
 const aqiIconColor = computed(() => {
   const aqi = currentAqi.value
-  if (aqi > 150) return 'red';
+  if (aqi > 200) return 'red';
   if (aqi > 100) return 'orange';
   return 'green';
 });
 const trafficIconColor = computed(() => {
   const traffic = currentTraffic.value
-  if (traffic > 100) return 'red';
-  if (traffic > 70) return 'orange';
+  if (traffic > 125) return 'red';
+  if (traffic > 75) return 'orange';
   return 'green';
 });
 
@@ -148,9 +146,3 @@ function dashboardV1() {
   router.push('/');
 }
 </script>
-
-<style scoped>
-.fill-height {
-    height: 100%;
-}
-</style>

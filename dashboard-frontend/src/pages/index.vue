@@ -94,17 +94,18 @@ async function fetchSensorData() {
   currentAqi.value = latestReading.aqi;
   currentTraffic.value = latestReading.traffic;
 
-  temperatureHistory.value = sensorReadings.map(reading => reading.temperature);
-  aqiHistory.value = sensorReadings.map(reading => reading.aqi);
-  trafficHistory.value = sensorReadings.map(reading => reading.traffic);
+  temperatureHistory.value = sensorReadings
+    .slice().reverse().map(reading => reading.temperature);
+  aqiHistory.value = sensorReadings
+    .slice().reverse().map(reading => reading.aqi);
+  trafficHistory.value = sensorReadings
+    .slice().reverse().map(reading => reading.traffic);
 }
 
-// Watch for changes in selectedZone
 watch(selectedZone, async () => {
   await fetchSensorData();
 })
 
-// Computed Properties for dynamic icon colors
 const temperatureIconColor = computed(() => {
   const temp = currentTemperature.value
   if (temp > 30) return 'red';
@@ -113,14 +114,14 @@ const temperatureIconColor = computed(() => {
 });
 const aqiIconColor = computed(() => {
   const aqi = currentAqi.value
-  if (aqi > 150) return 'red';
+  if (aqi > 200) return 'red';
   if (aqi > 100) return 'orange';
   return 'green';
 });
 const trafficIconColor = computed(() => {
   const traffic = currentTraffic.value
-  if (traffic > 100) return 'red';
-  if (traffic > 70) return 'orange';
+  if (traffic > 125) return 'red';
+  if (traffic > 75) return 'orange';
   return 'green';
 });
 
@@ -137,9 +138,3 @@ function dashboardV2() {
   router.push('/DashboardV2');
 }
 </script>
-
-<style scoped>
-.fill-height {
-    height: 100%;
-}
-</style>
