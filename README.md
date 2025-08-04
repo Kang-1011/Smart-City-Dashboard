@@ -1,6 +1,9 @@
 # Smart-City-Dashboard
 
-A real-time smart city dashboard that visualises temperature, AQI, and traffic levels across different zones using Vue 3, Firebase Functions, and Firestore.
+A real-time smart city dashboard that visualises temperature, AQI, and traffic levels across different zones using Vue 3, Firebase Functions, and Firestore. It does the following
+- Displays sensor readings: temperature, air quality index (AQI), traffic level.
+- Updates these values every few seconds (60 seconds).
+- Allows filtering by city zone (Downtown, Suburbs, Industrial).
 
 ## System Architecture
 - Frontend: Vue 3
