@@ -2,7 +2,6 @@
   <v-app>
     <v-main class="bg-grey-lighten-3">
       <v-container fluid>
-        <v-btn @click="newFetchSensorData(selectedZone, 1)">Click Now</v-btn>
         <v-row class="mb-4">
           <v-col cols="12">
             <h1 class="text-h4 font-weight-bold">Smart City Dashboard</h1>
@@ -65,92 +64,67 @@ import MetricCard from '@/components/MetricCard.vue';
 // State
 const selectedZone = ref('Suburbs');
 const zones = ["Downtown", "Suburbs", "Industrial"];
-const sensorData = ref([]);
 let fetchInterval = null;
 
-// Computed Properties for the current values
-const filteredData = computed(() => {
-  const data = sensorData.value.find(d => d.zone === selectedZone.value);
-  return data || {};
-});
+import { useSensorStore } from '@/stores/sensors';
+const sensorStore = useSensorStore();
 
-const currentTemperature = computed(() => filteredData.value.temperature || '—');
-const currentAqi = computed(() => filteredData.value.aqi || '—');
-const currentTraffic = computed(() => filteredData.value.traffic || '—');
+const currentTemperature = ref(0);
+const currentAqi = ref(0);
+const currentTraffic = ref(0);
+const temperatureHistory = ref([]);
+const aqiHistory = ref([]);
+const trafficHistory = ref([]);
 
-// Computed Properties for historical data (for sparklines)
-const temperatureHistory = computed(() => filteredData.value.temperatureHistory || []);
-const aqiHistory = computed(() => filteredData.value.aqiHistory || []);
-const trafficHistory = computed(() => filteredData.value.trafficHistory || []);
+async function fetchSensorData() {
+  await sensorStore.fetchSensorData(selectedZone.value, 50);
+
+  const sensorReadings = sensorStore.readings;
+
+  const latestReading = sensorReadings.reduce((latest, current) => {
+    const latestTime = new Date(latest.timestamp._seconds * 1000);
+    const currentTime = new Date(current.timestamp._seconds * 1000);
+
+    return currentTime > latestTime ? current : latest;
+  });
+  currentTemperature.value = latestReading.temperature;
+  currentAqi.value = latestReading.aqi;
+  currentTraffic.value = latestReading.traffic;
+
+  temperatureHistory.value = sensorReadings.map(reading => reading.temperature);
+  aqiHistory.value = sensorReadings.map(reading => reading.aqi);
+  trafficHistory.value = sensorReadings.map(reading => reading.traffic);
+}
+
+// Watch for changes in selectedZone
+watch(selectedZone, async (newZone) => {
+  await fetchSensorData();
+})
 
 // Computed Properties for dynamic icon colors
 const temperatureIconColor = computed(() => {
-  const temp = filteredData.value.temperature;
+  const temp = currentTemperature.value
   if (temp > 30) return 'red';
   if (temp > 20) return 'orange';
   return 'blue';
 });
 const aqiIconColor = computed(() => {
-  const aqi = filteredData.value.aqi;
+  const aqi = currentAqi.value
   if (aqi > 150) return 'red';
   if (aqi > 100) return 'orange';
   return 'green';
 });
 const trafficIconColor = computed(() => {
-  const traffic = filteredData.value.traffic;
+  const traffic = currentTraffic.value
   if (traffic > 7) return 'red';
   if (traffic > 4) return 'orange';
   return 'green';
 });
 
-import { useSensorStore } from '@/stores/sensors';
-const sensorStore = useSensorStore();
-
-const newFetchSensorData = async (zone, interval) => {
-  await sensorStore.fetchSensorData("Suburbs", 5)
-}
-
-// Mock API Call
-const fetchSensorData = async () => {
-  // Simulate an API call with a delay
-  console.log("Fetching new sensor data...");
-  const mockData = [
-    {
-      zone: 'Downtown',
-      temperature: (25 + Math.random() * 5).toFixed(1),
-      aqi: Math.floor(50 + Math.random() * 100),
-      traffic: Math.floor(1 + Math.random() * 8),
-      temperatureHistory: Array.from({ length: 25 }, () => (25 + Math.random() * 5).toFixed(1)),
-      aqiHistory: Array.from({ length: 25 }, () => Math.floor(50 + Math.random() * 100)),
-      trafficHistory: Array.from({ length: 25 }, () => Math.floor(1 + Math.random() * 8)),
-    },
-    {
-      zone: 'Suburbs',
-      temperature: (20 + Math.random() * 3).toFixed(1),
-      aqi: Math.floor(20 + Math.random() * 50),
-      traffic: Math.floor(1 + Math.random() * 3),
-      temperatureHistory: Array.from({ length: 25 }, () => (20 + Math.random() * 3).toFixed(1)),
-      aqiHistory: Array.from({ length: 25 }, () => Math.floor(20 + Math.random() * 50)),
-      trafficHistory: Array.from({ length: 25 }, () => Math.floor(1 + Math.random() * 3)),
-    },
-    {
-      zone: 'Financial District',
-      temperature: (26 + Math.random() * 4).toFixed(1),
-      aqi: Math.floor(60 + Math.random() * 80),
-      traffic: Math.floor(5 + Math.random() * 5),
-      temperatureHistory: Array.from({ length: 25 }, () => (26 + Math.random() * 4).toFixed(1)),
-      aqiHistory: Array.from({ length: 25 }, () => Math.floor(60 + Math.random() * 80)),
-      trafficHistory: Array.from({ length: 25 }, () => Math.floor(5 + Math.random() * 5)),
-    },
-  ];
-
-  sensorData.value = mockData;
-};
-
 // Lifecycle Hooks
-onMounted(() => {
-  fetchSensorData();
-  fetchInterval = setInterval(fetchSensorData, 60000); // Update every 3 seconds
+onMounted(async () => {
+  await fetchSensorData();
+  fetchInterval = setInterval(fetchSensorData, 60000);
 });
 
 onUnmounted(() => {
