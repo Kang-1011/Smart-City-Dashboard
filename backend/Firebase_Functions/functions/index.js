@@ -116,35 +116,39 @@ exports.scheduledSensorGenerator = onSchedule("*/1 * * * *", async () => {
   return null;
 });
 
+const cors = require("cors")({origin: true});
+
 exports.getLatestSensorReadings = onRequest(async (req, res) => {
-  const zone = req.query.zone;
-  const limit = parseInt(req.query.limit) || 1; // Default to 1 if not provided
+  cors(req, res, async () => {
+    const zone = req.query.zone;
+    const limit = parseInt(req.query.limit) || 1;
 
-  if (!zone) {
-    res.status(400).send({message: "Missing 'zone' parameter"});
-    return;
-  }
-
-  try {
-    const snapshot = await db
-        .collection("sensors")
-        .where("zone", "==", zone)
-        .orderBy("timestamp", "desc")
-        .limit(limit)
-        .get();
-
-    if (snapshot.empty) {
-      res.status(404).send({
-        message: "No data found",
-      });
+    if (!zone) {
+      res.status(400).send({message: "Missing 'zone' parameter"});
       return;
     }
 
-    const data = snapshot.docs.map((doc) => doc.data());
-    res.status(200).send(data);
-  } catch (err) {
-    res.status(500).send({
-      error: err.message,
-    });
-  }
+    try {
+      const snapshot = await db
+          .collection("sensors")
+          .where("zone", "==", zone)
+          .orderBy("timestamp", "desc")
+          .limit(limit)
+          .get();
+
+      if (snapshot.empty) {
+        res.status(404).send({
+          message: "No data found",
+        });
+        return;
+      }
+
+      const data = snapshot.docs.map((doc) => doc.data());
+      res.status(200).send(data);
+    } catch (err) {
+      res.status(500).send({
+        error: err.message,
+      });
+    }
+  });
 });
