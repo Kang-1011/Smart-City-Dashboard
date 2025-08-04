@@ -1,5 +1,5 @@
 <template>
-  <v-card class="mx-auto" color="surface-light" min-height="400">
+  <v-card class="mx-auto" color="surface-light" min-height="500">
     <template v-slot:prepend>
       <v-icon
         :color="iconColor"
@@ -27,7 +27,7 @@
         :smooth="16"
         stroke-linecap="round"
         auto-draw
-        :height="200"
+        :height="250"
       ></v-sparkline>
     </v-sheet>
   </v-card>

@@ -1,5 +1,5 @@
 <template>
-  <v-card class="mx-auto" color="surface-light" min-height="400">
+  <v-card class="mx-auto" color="surface-light" min-height="500">
     <template v-slot:prepend>
       <v-icon :color="iconColor" class="me-8" :icon="icon" size="64" />
     </template>
