@@ -2,6 +2,7 @@
   <v-app>
     <v-main class="bg-grey-lighten-3">
       <v-container fluid>
+        <v-btn @click="newFetchSensorData(selectedZone, 1)">Click Now</v-btn>
         <v-row class="mb-4">
           <v-col cols="12">
             <h1 class="text-h4 font-weight-bold">Smart City Dashboard</h1>
@@ -21,7 +22,7 @@
         </v-row>
 
         <v-row>
-          <v-col cols="12" md="12" lg="4">
+          <v-col cols="12" md="4" lg="4">
             <MetricCard
               icon="mdi-thermometer"
               title="Temperature"
@@ -31,7 +32,7 @@
               :icon-color="temperatureIconColor"
             />
           </v-col>
-          <v-col cols="12" md="12" lg="4">
+          <v-col cols="12" md="4" lg="4">
             <MetricCard
               icon="mdi-weather-windy"
               title="Air Quality Index"
@@ -41,7 +42,7 @@
               :icon-color="aqiIconColor"
             />
           </v-col>
-          <v-col cols="12" md="12" lg="4">
+          <v-col cols="12" md="4" lg="4">
             <MetricCard
               icon="mdi-car-multiple"
               title="Traffic Level"
@@ -63,7 +64,7 @@ import MetricCard from '@/components/MetricCard.vue';
 
 // State
 const selectedZone = ref('Suburbs');
-const zones = ['Downtown', 'Suburbs', 'Financial District'];
+const zones = ["Downtown", "Suburbs", "Industrial"];
 const sensorData = ref([]);
 let fetchInterval = null;
 
@@ -101,6 +102,13 @@ const trafficIconColor = computed(() => {
   if (traffic > 4) return 'orange';
   return 'green';
 });
+
+import { useSensorStore } from '@/stores/sensors';
+const sensorStore = useSensorStore();
+
+const newFetchSensorData = async (zone, interval) => {
+  await sensorStore.fetchSensorData("Suburbs", 5)
+}
 
 // Mock API Call
 const fetchSensorData = async () => {
