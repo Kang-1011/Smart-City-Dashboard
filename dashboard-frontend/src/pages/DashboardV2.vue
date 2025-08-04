@@ -3,8 +3,11 @@
     <v-main class="bg-grey-lighten-3">
       <v-container fluid>
         <v-row class="mb-4">
-          <v-col cols="12">
+          <v-col cols="10">
             <h1 class="text-h4 font-weight-bold">Smart City Dashboard</h1>
+          </v-col>
+          <v-col cols="2" class="d-flex justify-end">
+            <v-btn color="black" @click="dashboardV1">Dashboard V1</v-btn>
           </v-col>
         </v-row>
         
@@ -59,15 +62,15 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue';
+import { useRouter } from "vue-router";
 import MetricCard2 from '@/components/MetricCard2.vue';
+import { useSensorStore } from '@/stores/sensors';
+const sensorStore = useSensorStore();
+const router = useRouter();
 
-// State
 const selectedZone = ref('Suburbs');
 const zones = ["Downtown", "Suburbs", "Industrial"];
 let fetchInterval = null;
-
-import { useSensorStore } from '@/stores/sensors';
-const sensorStore = useSensorStore();
 
 const currentTemperature = ref(0);
 const currentAqi = ref(0);
@@ -77,7 +80,7 @@ const aqiHistory = ref([]);
 const trafficHistory = ref([]);
 
 async function fetchSensorData() {
-  await sensorStore.fetchSensorData(selectedZone.value, 50);
+  await sensorStore.fetchSensorData(selectedZone.value, 60);
 
   const sensorReadings = sensorStore.readings;
 
@@ -127,12 +130,11 @@ const aqiIconColor = computed(() => {
 });
 const trafficIconColor = computed(() => {
   const traffic = currentTraffic.value
-  if (traffic > 7) return 'red';
-  if (traffic > 4) return 'orange';
+  if (traffic > 100) return 'red';
+  if (traffic > 70) return 'orange';
   return 'green';
 });
 
-// Lifecycle Hooks
 onMounted(async () => {
   await fetchSensorData();
   fetchInterval = setInterval(fetchSensorData, 60000);
@@ -141,6 +143,10 @@ onMounted(async () => {
 onUnmounted(() => {
   clearInterval(fetchInterval);
 });
+
+function dashboardV1() {
+  router.push('/');
+}
 </script>
 
 <style scoped>
