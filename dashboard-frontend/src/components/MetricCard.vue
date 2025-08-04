@@ -17,15 +17,6 @@
       <strong v-if="value !== '—'">{{ unit }}</strong>
     </template>
 
-    <template v-slot:append>
-      <v-btn
-        class="align-self-start"
-        icon="mdi-arrow-right-thick"
-        size="34"
-        variant="text"
-      ></v-btn>
-    </template>
-
     <v-sheet color="transparent">
       <v-sparkline
         v-if="history.length > 0"
@@ -36,7 +27,6 @@
         :smooth="16"
         stroke-linecap="round"
         auto-draw
-        auto-line-width="true"
         :height="200"
       ></v-sparkline>
     </v-sheet>
@@ -44,7 +34,7 @@
 </template>
 
 <script setup>
-import { defineProps, computed } from 'vue';
+import { computed } from 'vue';
 
 const props = defineProps({
   icon: String,
