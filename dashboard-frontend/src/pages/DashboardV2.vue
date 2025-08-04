@@ -3,11 +3,8 @@
     <v-main class="bg-grey-lighten-3">
       <v-container fluid>
         <v-row class="mb-4">
-          <v-col cols="10">
+          <v-col cols="12">
             <h1 class="text-h4 font-weight-bold">Smart City Dashboard</h1>
-          </v-col>
-          <v-col cols="2" class="d-flex justify-end">
-            <v-btn color="black" @click="dashboardV2">Dashboard V2</v-btn>
           </v-col>
         </v-row>
         
@@ -25,7 +22,7 @@
 
         <v-row>
           <v-col cols="12" md="4" lg="4">
-            <MetricCard
+            <MetricCard2
               icon="mdi-thermometer"
               title="Temperature"
               :value="currentTemperature"
@@ -35,7 +32,7 @@
             />
           </v-col>
           <v-col cols="12" md="4" lg="4">
-            <MetricCard
+            <MetricCard2
               icon="mdi-weather-windy"
               title="Air Quality Index"
               :value="currentAqi"
@@ -45,7 +42,7 @@
             />
           </v-col>
           <v-col cols="12" md="4" lg="4">
-            <MetricCard
+            <MetricCard2
               icon="mdi-car-multiple"
               title="Traffic Level"
               :value="currentTraffic"
@@ -62,15 +59,15 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue';
-import { useRouter } from "vue-router";
-import MetricCard from '@/components/MetricCard.vue';
-import { useSensorStore } from '@/stores/sensors';
-const sensorStore = useSensorStore();
-const router = useRouter();
+import MetricCard2 from '@/components/MetricCard2.vue';
 
+// State
 const selectedZone = ref('Suburbs');
 const zones = ["Downtown", "Suburbs", "Industrial"];
 let fetchInterval = null;
+
+import { useSensorStore } from '@/stores/sensors';
+const sensorStore = useSensorStore();
 
 const currentTemperature = ref(0);
 const currentAqi = ref(0);
@@ -94,9 +91,20 @@ async function fetchSensorData() {
   currentAqi.value = latestReading.aqi;
   currentTraffic.value = latestReading.traffic;
 
-  temperatureHistory.value = sensorReadings.map(reading => reading.temperature);
-  aqiHistory.value = sensorReadings.map(reading => reading.aqi);
-  trafficHistory.value = sensorReadings.map(reading => reading.traffic);
+  temperatureHistory.value = sensorReadings.map(reading => ({
+    timestamp: reading.timestamp,
+    value: reading.temperature
+    }));
+
+  aqiHistory.value = sensorReadings.map(reading => ({
+    timestamp: reading.timestamp,
+    value: reading.aqi
+  }));
+
+  trafficHistory.value = sensorReadings.map(reading => ({
+    timestamp: reading.timestamp,
+    value: reading.traffic
+  }));
 }
 
 // Watch for changes in selectedZone
@@ -133,10 +141,6 @@ onMounted(async () => {
 onUnmounted(() => {
   clearInterval(fetchInterval);
 });
-
-function dashboardV2() {
-  router.push('/DashboardV2');
-}
 </script>
 
 <style scoped>

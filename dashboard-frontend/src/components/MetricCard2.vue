@@ -1,12 +1,7 @@
 <template>
   <v-card class="mx-auto" color="surface-light" min-height="500">
     <template v-slot:prepend>
-      <v-icon
-        :color="iconColor"
-        class="me-8"
-        :icon="icon"
-        size="64"
-      ></v-icon>
+      <v-icon :color="iconColor" class="me-8" :icon="icon" size="64" />
     </template>
 
     <template v-slot:title>
@@ -18,23 +13,19 @@
     </template>
 
     <v-sheet color="transparent">
-      <v-sparkline
+      <TimeSeriesChart
         v-if="history.length > 0"
-        :key="title + value"
-        :gradient="sparklineGradient"
-        :line-width="3"
-        :model-value="history"
-        :smooth="16"
-        stroke-linecap="round"
-        auto-draw
-        :height="250"
-      ></v-sparkline>
+        :label="title"
+        :data-points="history"
+        :color="chartColor"
+      />
     </v-sheet>
   </v-card>
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed } from 'vue'
+import TimeSeriesChart from './TimeSeriesChart.vue'
 
 const props = defineProps({
   icon: String,
@@ -43,13 +34,12 @@ const props = defineProps({
   unit: String,
   history: {
     type: Array,
-    default: () => [],
+    default: () => [], // Expecting: [{ timestamp: {_seconds}, value }]
   },
   iconColor: String,
-});
+})
 
-const sparklineGradient = computed(() => {
-  // A generic gradient for the sparklines
-  return ['#42b883', '#35495e'];
-});
+const chartColor = computed(() => {
+  return props.iconColor || '#42b883'
+})
 </script>

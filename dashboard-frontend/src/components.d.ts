@@ -11,8 +11,10 @@ declare module 'vue' {
     AppFooter: typeof import('./components/AppFooter.vue')['default']
     HelloWorld: typeof import('./components/HelloWorld.vue')['default']
     MetricCard: typeof import('./components/MetricCard.vue')['default']
+    MetricCard2: typeof import('./components/MetricCard2.vue')['default']
     MetricsCard: typeof import('./components/MetricsCard.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    TimeSeriesChart: typeof import('./components/TimeSeriesChart.vue')['default']
   }
 }
