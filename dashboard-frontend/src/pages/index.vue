@@ -80,7 +80,7 @@ const aqiHistory = ref([]);
 const trafficHistory = ref([]);
 
 async function fetchSensorData() {
-  await sensorStore.fetchSensorData(selectedZone.value, 50);
+  await sensorStore.fetchSensorData(selectedZone.value, 60);
 
   const sensorReadings = sensorStore.readings;
 
@@ -119,12 +119,11 @@ const aqiIconColor = computed(() => {
 });
 const trafficIconColor = computed(() => {
   const traffic = currentTraffic.value
-  if (traffic > 7) return 'red';
-  if (traffic > 4) return 'orange';
+  if (traffic > 100) return 'red';
+  if (traffic > 70) return 'orange';
   return 'green';
 });
 
-// Lifecycle Hooks
 onMounted(async () => {
   await fetchSensorData();
   fetchInterval = setInterval(fetchSensorData, 60000);

@@ -36,7 +36,6 @@ const chartData = {
       borderColor: props.color || '#42a5f5',
       backgroundColor: props.color + '33' || 'rgba(66, 165, 245, 0.2)',
       tension: 0.3,
-      fill: true,
       pointRadius: 3,
     }
   ]
