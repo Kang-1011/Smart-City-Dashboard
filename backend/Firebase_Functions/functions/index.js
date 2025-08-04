@@ -38,11 +38,6 @@ const admin = require("firebase-admin");
 admin.initializeApp();
 const db = admin.firestore();
 
-// Testing function
-exports.helloFunction = onRequest((req, res) => {
-  res.json({message: "Hello from Firebase!"});
-});
-
 exports.addSensorReading = onRequest(async (req, res) => {
   const {zone, temperature, aqi, traffic} = req.body;
 
@@ -59,39 +54,6 @@ exports.addSensorReading = onRequest(async (req, res) => {
       id: docRef.id,
       message: "Sensor reading added successfully",
     });
-  } catch (err) {
-    res.status(500).send({
-      error: err.message,
-    });
-  }
-});
-
-exports.getLatestSensorReadings = onRequest(async (req, res) => {
-  const zone = req.query.zone;
-  const limit = parseInt(req.query.limit) || 1; // Default to 1 if not provided
-
-  if (!zone) {
-    res.status(400).send({message: "Missing 'zone' parameter"});
-    return;
-  }
-
-  try {
-    const snapshot = await db
-        .collection("sensors")
-        .where("zone", "==", zone)
-        .orderBy("timestamp", "desc")
-        .limit(limit)
-        .get();
-
-    if (snapshot.empty) {
-      res.status(404).send({
-        message: "No data found",
-      });
-      return;
-    }
-
-    const data = snapshot.docs.map((doc) => doc.data());
-    res.status(200).send(data);
   } catch (err) {
     res.status(500).send({
       error: err.message,
@@ -152,4 +114,37 @@ exports.scheduledSensorGenerator = onSchedule("*/1 * * * *", async () => {
   }
 
   return null;
+});
+
+exports.getLatestSensorReadings = onRequest(async (req, res) => {
+  const zone = req.query.zone;
+  const limit = parseInt(req.query.limit) || 1; // Default to 1 if not provided
+
+  if (!zone) {
+    res.status(400).send({message: "Missing 'zone' parameter"});
+    return;
+  }
+
+  try {
+    const snapshot = await db
+        .collection("sensors")
+        .where("zone", "==", zone)
+        .orderBy("timestamp", "desc")
+        .limit(limit)
+        .get();
+
+    if (snapshot.empty) {
+      res.status(404).send({
+        message: "No data found",
+      });
+      return;
+    }
+
+    const data = snapshot.docs.map((doc) => doc.data());
+    res.status(200).send(data);
+  } catch (err) {
+    res.status(500).send({
+      error: err.message,
+    });
+  }
 });
