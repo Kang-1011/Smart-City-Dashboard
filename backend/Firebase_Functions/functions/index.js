@@ -32,34 +32,10 @@ setGlobalOptions({maxInstances: 10});
 //   response.send("Hello from Firebase!");
 // });
 
-// const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 
 admin.initializeApp();
 const db = admin.firestore();
-
-exports.addSensorReading = onRequest(async (req, res) => {
-  const {zone, temperature, aqi, traffic} = req.body;
-
-  try {
-    const docRef = await db.collection("sensors").add({
-      zone,
-      temperature,
-      aqi,
-      traffic,
-      timestamp: new Date(),
-    });
-
-    res.status(200).send({
-      id: docRef.id,
-      message: "Sensor reading added successfully",
-    });
-  } catch (err) {
-    res.status(500).send({
-      error: err.message,
-    });
-  }
-});
 
 exports.scheduledSensorGenerator = onSchedule("*/1 * * * *", async () => {
   const zones = ["Downtown", "Suburbs", "Industrial"];
@@ -103,9 +79,10 @@ exports.scheduledSensorGenerator = onSchedule("*/1 * * * *", async () => {
       zone,
       temperature: fluctuate(latest.temperature, MIN_MAX.temperature.min,
           MIN_MAX.temperature.max, 0.25),
-      aqi: fluctuate(latest.aqi, MIN_MAX.aqi.min, MIN_MAX.aqi.max, 2.5),
+      aqi: Math.round(fluctuate(latest.aqi, MIN_MAX.aqi.min, MIN_MAX.aqi.max,
+          2.5)),
       traffic: Math.round(fluctuate(latest.traffic, MIN_MAX.traffic.min,
-          MIN_MAX.traffic.max, 10)),
+          MIN_MAX.traffic.max, 20)),
       timestamp: new Date(),
     };
 

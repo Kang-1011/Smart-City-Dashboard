@@ -1,4 +1,3 @@
-<!-- src/components/TimeSeriesChart.vue -->
 <template>
   <Line :data="chartData" :options="chartOptions" :height="400" />
 </template>
