@@ -42,3 +42,5 @@ Start the server
 
 ## Link to live deployment
 https://wk-smart-city-dashboard.web.app/
+
+**Note**: This link might not work after September 2, 2025. If it doesn't, feel free to contact me for alternative access.
